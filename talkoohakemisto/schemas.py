@@ -98,7 +98,12 @@ class VoluntaryWorkSchema(colander.MappingSchema):
         missing=u'',
         validator=colander.Length(min=1, max=100)
     )
-
+    picture_url = colander.SchemaNode(
+        colander.String(),
+        missing=u'',
+        validator=colander.Length(min=1, max=100)
+    )
+ 
     links = VoluntaryWorkLinksSchema()
 
 

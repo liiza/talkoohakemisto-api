@@ -40,6 +40,7 @@ class VoluntaryWorkSerializer(Serializer):
             'goal',
             #'contact_phone',
             'organization',
+            'picture_url',
             'lat',
             'lng'
         )
@@ -63,6 +64,7 @@ class VoluntaryWorkEditSerializer(Serializer):
             'goal',
             'contact_phone',
             'organization',
+            'picture_url',
             'lat',
             'lng'
         )

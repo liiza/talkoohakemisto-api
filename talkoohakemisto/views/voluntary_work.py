@@ -21,12 +21,17 @@ from ..services import (
     VoluntaryWorkEmailConfirmationService
 )
 
+#s3_upload imports
+from hashlib import sha1
+import time, os, json, base64, hmac, urllib
+
 
 voluntary_work = Blueprint(
     name='voluntary_work',
     import_name=__name__,
     url_prefix='/voluntary_works'
 )
+
 
 @voluntary_work.route('')
 def index():
@@ -37,7 +42,6 @@ def index():
         .paginate(page=page, per_page=200)
     )
     return jsonify(**_serialize_pagination(pagination))
-
 
 @voluntary_work.route('/<int:id>')
 def get(id):
@@ -213,3 +217,29 @@ def _serialize_pagination(pagination):
         }
     }
     return data
+
+
+@voluntary_work.route('/sign_s3/')
+def sign_s3():
+    AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY')
+    AWS_SECRET_KEY = os.environ.get('AWS_SECRET_KEY')
+    S3_BUCKET = os.environ.get('S3_BUCKET')
+
+    object_name = request.args.get('s3_object_name')
+    mime_type = request.args.get('s3_object_type')
+
+    expires = int(time.time()+10)
+    amz_headers = "x-amz-acl:public-read"
+
+    put_request = "PUT\n\n%s\n%d\n%s\n/%s/%s" % (mime_type, expires, amz_headers, S3_BUCKET, object_name)
+
+    signature = base64.encodestring(hmac.new(AWS_SECRET_KEY, put_request, sha1).digest())
+    signature = urllib.quote_plus(signature.strip())
+
+    url = 'https://%s.s3.amazonaws.com/%s' % (S3_BUCKET, object_name)
+    return json.dumps({
+        'signed_request': '%s?AWSAccessKeyId=%s&Expires=%d&Signature=%s' % (url, AWS_ACCESS_KEY, expires, signature),
+         'url': url
+      })
+
+

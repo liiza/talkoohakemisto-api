@@ -50,7 +50,8 @@ class VoluntaryWork(db.Model):
     time = db.Column(db.Unicode(100), nullable=True)
     goal = db.Column(db.Unicode(100), nullable=True)
     contact_phone = db.Column(db.Unicode(100), nullable=True)
-    organization = db.Column(db.Unicode(100), nullable=True)
+    organization = db.Column(db.Unicode(100), nullable=True) 
+    picture_url = db.Column(db.Unicode(100), nullable=True)
     lat = db.Column(db.Float, nullable=True)
     lng = db.Column(db.Float, nullable=True)
 
